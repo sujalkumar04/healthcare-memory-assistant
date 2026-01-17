@@ -1,11 +1,11 @@
 """
-Embedding engine using sentence-transformers.
+Embedding engine using fastembed (ONNX-based).
 
-Model: all-MiniLM-L6-v2
+Model: sentence-transformers/all-MiniLM-L6-v2 (via fastembed)
 Vector size: 384 dimensions
 """
 
-from sentence_transformers import SentenceTransformer
+from fastembed import TextEmbedding
 
 from app.core.config import settings
 from app.core.exceptions import EmbeddingError
@@ -13,16 +13,16 @@ from app.core.exceptions import EmbeddingError
 
 class Embedder:
     """
-    Generates 384-dimensional embeddings using sentence-transformers.
+    Generates 384-dimensional embeddings using FastEmbed (ONNX).
     
     Model: all-MiniLM-L6-v2
-    - Fast inference
-    - Good quality for semantic similarity
+    - Extremely fast inference (ONNX Runtime)
+    - Low memory footprint (<200MB vs >1GB for PyTorch)
     - No API key required (runs locally)
     """
 
     _instance: "Embedder | None" = None
-    _model: SentenceTransformer | None = None
+    _model: TextEmbedding | None = None
 
     def __new__(cls) -> "Embedder":
         """Singleton pattern for model reuse."""
@@ -31,11 +31,15 @@ class Embedder:
         return cls._instance
 
     @property
-    def model(self) -> SentenceTransformer:
-        """Lazy-load the sentence-transformers model."""
+    def model(self) -> TextEmbedding:
+        """Lazy-load the fastembed model."""
         if Embedder._model is None:
             try:
-                Embedder._model = SentenceTransformer(settings.EMBEDDING_MODEL)
+                # FastEmbed downloads and caches the model automatically
+                Embedder._model = TextEmbedding(
+                    model_name=settings.EMBEDDING_MODEL,
+                    fast_model_loading=True
+                )
             except Exception as e:
                 raise EmbeddingError(f"Failed to load embedding model: {e}")
         return Embedder._model
@@ -54,12 +58,9 @@ class Embedder:
             raise EmbeddingError("Cannot embed empty text")
 
         try:
-            embedding = self.model.encode(
-                text,
-                convert_to_numpy=True,
-                normalize_embeddings=True,  # L2 normalize for cosine similarity
-            )
-            return embedding.tolist()
+            # fastembed returns a generator of vectors
+            embedding_gen = self.model.embed([text])
+            return list(next(embedding_gen))
         except Exception as e:
             raise EmbeddingError(f"Failed to generate embedding: {e}")
 
@@ -82,13 +83,8 @@ class Embedder:
             raise EmbeddingError("All texts are empty")
 
         try:
-            embeddings = self.model.encode(
-                valid_texts,
-                convert_to_numpy=True,
-                normalize_embeddings=True,
-                show_progress_bar=False,
-            )
-            return [emb.tolist() for emb in embeddings]
+            # list(generator) to get all vectors
+            return list(self.model.embed(valid_texts))
         except Exception as e:
             raise EmbeddingError(f"Failed to generate batch embeddings: {e}")
 
