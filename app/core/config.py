@@ -31,9 +31,9 @@ class Settings(BaseSettings):
     EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
     EMBEDDING_DIMENSION: int = 384
 
-    # LLM (OpenAI)
-    OPENAI_API_KEY: str = ""
-    OPENAI_LLM_MODEL: str = "gpt-4"
+    # LLM (Groq)
+    GROQ_API_KEY: str = ""
+    GROQ_MODEL: str = "llama3-70b-8192"
 
 
     # Security

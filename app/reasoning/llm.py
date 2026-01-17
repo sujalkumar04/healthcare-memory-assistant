@@ -34,18 +34,20 @@ class LLMClient:
 
     @property
     def client(self) -> OpenAI:
-        """Lazy-load the OpenAI client."""
+        """Lazy-load the OpenAI-compatible Groq client."""
         if LLMClient._client is None:
-            api_key = settings.OPENAI_API_KEY
+            api_key = settings.GROQ_API_KEY
             if not api_key:
-                raise LLMError("OPENAI_API_KEY not configured")
+                # Fallback check for env var directly if not in settings object yet
+                api_key = os.getenv("GROQ_API_KEY")
             
-            # Support custom base URL for compatible APIs
-            base_url = os.getenv("OPENAI_BASE_URL")
+            if not api_key:
+                raise LLMError("GROQ_API_KEY not configured")
             
+            # Groq uses OpenAI-compatible API
             LLMClient._client = OpenAI(
                 api_key=api_key,
-                base_url=base_url if base_url else None,
+                base_url="https://api.groq.com/openai/v1",
                 timeout=30.0,
             )
         return LLMClient._client
@@ -53,7 +55,7 @@ class LLMClient:
     @property
     def model(self) -> str:
         """Get configured model name."""
-        return settings.OPENAI_LLM_MODEL
+        return settings.GROQ_MODEL
 
     async def generate(
         self,
