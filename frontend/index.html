@@ -4,1988 +4,1287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Healthcare Memory Assistant</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Healthcare Memory Assistant | Zero-Hallucination AI</title>
+    <meta name="description"
+        content="A memory-first AI system for healthcare decision support with zero hallucination. Evidence-based reasoning powered by semantic embeddings.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <style>
+        /* ===== CSS Variables ===== */
         :root {
             --bg-primary: #f8fafc;
             --bg-secondary: #ffffff;
             --bg-card: #ffffff;
-            --bg-input: #f1f5f9;
-            --accent: #10b981;
+            --accent-primary: #10b981;
             --accent-secondary: #14b8a6;
+            --accent-dark: #059669;
             --accent-glow: rgba(16, 185, 129, 0.2);
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
             --text-primary: #0f172a;
             --text-secondary: #475569;
             --text-muted: #64748b;
             --border: #e2e8f0;
-            --border-hover: #cbd5e1;
+            --border-hover: rgba(16, 185, 129, 0.4);
         }
 
-        * {
+        /* ===== Reset & Base ===== */
+        *,
+        *::before,
+        *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
+            color: var(--text-secondary);
             line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
+        ::selection {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        /* ===== Container ===== */
         .container {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
-            padding: 2rem;
+            padding: 0 1.5rem;
         }
 
-        .back-link {
-            display: inline-flex;
+        .section {
+            padding: 5rem 0;
+        }
+
+        /* ===== Navigation ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 1.5rem;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+            border-radius: 9999px;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
             align-items: center;
             gap: 0.5rem;
-            color: var(--text-muted);
             text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 1rem;
-            transition: color 0.2s;
         }
 
-        .back-link:hover {
-            color: var(--accent);
-        }
-
-        /* Header */
-        .header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding: 2rem 0;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--accent-secondary), var(--accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
-
-        .header p {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-        }
-
-        /* Patient Summary Card */
-        .patient-summary-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-        }
-
-        .patient-avatar {
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+        .logo-icon {
+            background: var(--accent-primary);
+            padding: 0.375rem;
+            border-radius: 0.5rem;
             color: white;
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .patient-info h3 {
             font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-            color: var(--text-primary);
+            transition: background 0.3s;
         }
 
-        .patient-details {
-            display: flex;
-            gap: 0.75rem;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
+        .logo:hover .logo-icon {
+            background: var(--accent-dark);
         }
 
-        .patient-details span {
-            position: relative;
-        }
-
-        .patient-details span:not(:last-child)::after {
-            content: "•";
-            position: absolute;
-            right: -0.5rem;
-            color: var(--border);
-        }
-
-        .patient-meta {
-            margin-left: auto;
-            display: flex;
-            gap: 2rem;
-        }
-
-        .meta-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .meta-item .label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.25rem;
-        }
-
-        .meta-item .value {
-            font-size: 0.95rem;
+        .logo-text {
+            font-size: 1.25rem;
             font-weight: 600;
             color: var(--text-primary);
+            letter-spacing: -0.025em;
         }
 
-        @media (max-width: 768px) {
-            .patient-meta {
-                width: 100%;
-                margin-left: 0;
-                justify-content: space-between;
-                border-top: 1px solid var(--border);
-                padding-top: 1rem;
-            }
-        }
-
-        .status-badge {
-            display: inline-flex;
+        .nav-links {
+            display: none;
             align-items: center;
-            gap: 0.5rem;
-            background: var(--bg-card);
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            margin-top: 1rem;
-            font-size: 0.875rem;
+            gap: 2rem;
+            list-style: none;
         }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.5;
+        @media (min-width: 768px) {
+            .nav-links {
+                display: flex;
             }
         }
 
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-            background: var(--bg-secondary);
-            padding: 0.5rem;
-            border-radius: 1rem;
-            width: fit-content;
-        }
-
-        .tab {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            background: transparent;
+        .nav-links a {
             color: var(--text-secondary);
-            font-size: 0.9rem;
+            text-decoration: none;
+            font-size: 0.875rem;
             font-weight: 500;
-            cursor: pointer;
-            border-radius: 0.75rem;
-            transition: all 0.3s ease;
+            transition: color 0.3s;
         }
 
-        .tab:hover {
-            color: var(--text-primary);
+        .nav-links a:hover {
+            color: var(--accent-primary);
         }
 
-        .tab.active {
-            background: var(--accent);
-            color: white;
-            box-shadow: 0 4px 15px var(--accent-glow);
-        }
-
-        /* Panels */
-        .panel {
+        .nav-cta {
             display: none;
         }
 
-        .panel.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
+        @media (min-width: 768px) {
+            .nav-cta {
+                display: inline-flex;
             }
         }
 
-        /* Cards */
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        .card h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Forms */
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        .form-group label {
-            display: block;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        input,
-        textarea,
-        select {
-            width: 100%;
-            padding: 0.875rem 1rem;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 0.75rem;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            font-family: inherit;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
-
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .row-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 1rem;
-        }
-
-        /* Buttons */
+        /* ===== Buttons ===== */
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            padding: 0.875rem 1.5rem;
+            padding: 0.625rem 1.25rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            text-decoration: none;
             border: none;
-            border-radius: 0.75rem;
-            font-size: 0.95rem;
-            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent-secondary), var(--accent));
+            background: var(--accent-primary);
             color: white;
-            box-shadow: 0 4px 15px var(--accent-glow);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);
         }
 
         .btn-primary:hover {
+            background: var(--accent-dark);
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.3);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px var(--accent-glow);
         }
 
         .btn-secondary {
-            background: var(--bg-input);
-            color: var(--text-primary);
+            background: white;
+            color: var(--text-secondary);
             border: 1px solid var(--border);
         }
 
         .btn-secondary:hover {
-            background: var(--bg-card);
+            border-color: #d1fae5;
+            color: var(--accent-primary);
+            background: #f0fdf4;
         }
 
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* Response area */
-        .response-area {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-top: 1.5rem;
-            min-height: 200px;
-        }
-
-        .response-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .response-meta {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .meta-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            padding: 0.35rem 0.75rem;
-            background: var(--bg-card);
-            border-radius: 0.5rem;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .meta-badge.success {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--success);
-        }
-
-        .meta-badge.warning {
-            background: rgba(245, 158, 11, 0.15);
-            color: var(--warning);
-        }
-
-        .answer-text {
+        .btn-lg {
+            padding: 0.875rem 2rem;
             font-size: 1rem;
-            line-height: 1.8;
-            color: var(--text-primary);
         }
 
-        /* Formatted answer content */
-        .answer-content {
-            font-size: 1rem;
-            line-height: 1.8;
-            color: var(--text-primary);
+        /* ===== Hero Section ===== */
+        .hero {
+            padding-top: 8rem;
+            padding-bottom: 5rem;
+            overflow: hidden;
         }
 
-        .answer-content p {
-            margin-bottom: 1rem;
-        }
-
-        .answer-content .section-header {
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: var(--accent);
-            margin: 1.5rem 0 0.75rem 0;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .answer-content .section-header:first-child {
-            margin-top: 0;
-        }
-
-        .answer-content .symptom-list {
-            list-style: none;
-            padding: 0;
-            margin: 0.75rem 0;
-        }
-
-        .answer-content .symptom-list li {
-            position: relative;
-            padding: 0.75rem 1rem;
-            margin-bottom: 0.5rem;
-            background: var(--bg-card);
-            border-radius: 0.5rem;
-            border-left: 3px solid var(--accent);
-            transition: all 0.2s ease;
-        }
-
-        .answer-content .symptom-list li:hover {
-            background: rgba(99, 102, 241, 0.1);
-            transform: translateX(4px);
-        }
-
-        .answer-content .list-number {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            background: var(--accent);
-            color: white;
-            border-radius: 50%;
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-right: 0.75rem;
-        }
-
-        .answer-content strong {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .answer-content em {
-            color: var(--text-secondary);
-            font-style: italic;
-        }
-
-        .answer-content .quoted-term {
-            color: var(--warning);
-            font-style: italic;
-        }
-
-        .disclaimer {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            background: rgba(99, 102, 241, 0.1);
-            border-left: 3px solid var(--accent);
-            border-radius: 0 0.5rem 0.5rem 0;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        /* Evidence list */
-        .evidence-list {
-            margin-top: 1rem;
-        }
-
-        .evidence-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 0.75rem;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            transition: border-color 0.3s;
-        }
-
-        .evidence-item:hover {
-            border-color: var(--accent);
-        }
-
-        .evidence-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .evidence-type {
-            padding: 0.25rem 0.75rem;
-            background: var(--accent);
-            border-radius: 0.5rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .evidence-score {
-            color: var(--success);
-            font-weight: 600;
-        }
-
-        .evidence-content {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        /* Stats grid */
-        .stats-grid {
+        .hero-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        @media (min-width: 1024px) {
+            .hero-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 5rem;
+            }
+        }
+
+        .hero-content {
+            max-width: 600px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 600;
+            letter-spacing: -0.025em;
+            line-height: 1.1;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.125rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            max-width: 500px;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .hero-social {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .avatar-group {
+            display: flex;
+        }
+
+        .avatar-group img {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            border: 2px solid white;
+            object-fit: cover;
+            margin-left: -0.75rem;
+        }
+
+        .avatar-group img:first-child {
+            margin-left: 0;
+        }
+
+        .social-proof {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stars {
+            display: flex;
+            gap: 0.125rem;
+            color: #facc15;
+            font-size: 1rem;
+        }
+
+        .social-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .social-text strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Hero Visual */
+        .hero-visual {
+            position: relative;
+        }
+
+        .hero-image {
+            width: 100%;
+            border-radius: 2rem;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            position: relative;
+        }
+
+        .hero-card-header {
+            display: flex;
+            align-items: center;
             gap: 1rem;
             margin-bottom: 1.5rem;
         }
 
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 0.75rem;
+        .hero-card-icon {
+            width: 3.5rem;
+            height: 3.5rem;
+            background: var(--accent-primary);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .hero-card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .hero-card-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-box {
+            background: white;
+            border-radius: 1rem;
             padding: 1.25rem;
             text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
         .stat-value {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 700;
-            color: var(--accent);
+            color: var(--accent-primary);
         }
 
         .stat-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             margin-top: 0.25rem;
         }
 
-        /* Loading */
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 2rem;
-            color: var(--text-muted);
+        /* ===== Features Section ===== */
+        .features {
+            background: white;
         }
 
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--border);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Empty state */
-        .empty-state {
+        .section-header {
             text-align: center;
-            padding: 3rem;
-            color: var(--text-muted);
+            margin-bottom: 4rem;
         }
 
-        .empty-state svg {
-            width: 64px;
-            height: 64px;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        /* Quick actions */
-        .quick-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 1rem;
-        }
-
-        .quick-btn {
+        .section-tag {
+            display: inline-block;
             padding: 0.5rem 1rem;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 2rem;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s;
+            background: #ecfdf5;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: var(--accent-primary);
+            font-weight: 600;
+            margin-bottom: 1rem;
         }
 
-        .quick-btn:hover {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            padding: 1rem 1.5rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .toast.success {
-            border-color: var(--success);
-        }
-
-        .toast.error {
-            border-color: var(--danger);
-        }
-
-        /* Smart Suggestions */
-        .patient-input-group {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .patient-input-group input {
-            flex: 1;
-        }
-
-        .btn-icon {
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 0.75rem;
-            color: var(--text-primary);
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: all 0.3s;
-        }
-
-        .btn-icon:hover {
-            background: var(--accent);
-            border-color: var(--accent);
-        }
-
-        .smart-suggestions {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 1rem;
-            padding: 1rem;
-            margin-bottom: 1.25rem;
-        }
-
-        .suggestion-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .suggestion-icon {
-            font-size: 1.2rem;
-        }
-
-        .suggestion-title {
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 2.75rem);
             font-weight: 600;
             color: var(--text-primary);
-            font-size: 0.9rem;
+            letter-spacing: -0.025em;
+            margin-bottom: 1rem;
         }
 
-        .patient-badge {
-            margin-left: auto;
-            padding: 0.25rem 0.75rem;
-            background: var(--bg-card);
-            border-radius: 2rem;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .patient-badge.has-data {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--success);
-        }
-
-        .patient-badge.no-data {
-            background: rgba(245, 158, 11, 0.15);
-            color: var(--warning);
-        }
-
-        .suggestion-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .suggestion-tag {
-            padding: 0.5rem 1rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 2rem;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 0.35rem;
-        }
-
-        .suggestion-tag:hover {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-            transform: translateY(-2px);
-        }
-
-        .suggestion-tag .tag-icon {
-            font-size: 0.9rem;
-        }
-
-        .loading-dots {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            animation: blink 1.5s infinite;
-        }
-
-        @keyframes blink {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.4;
-            }
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .no-suggestions {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-style: italic;
-        }
-
-        /* Timeline Styles */
-        .timeline-container {
-            position: relative;
-            padding: 1rem 0;
-        }
-
-        .timeline-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background: var(--bg-card);
-            border-radius: 1rem;
-            border: 1px solid var(--border);
-        }
-
-        .timeline-header h4 {
+        .section-header p {
             font-size: 1.1rem;
-            margin: 0;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        .timeline-stats {
-            display: flex;
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
         }
 
-        .timeline-stat {
-            text-align: center;
-        }
-
-        .timeline-stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        .timeline-stat-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .timeline {
-            position: relative;
-            padding-left: 2rem;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0.5rem;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: linear-gradient(to bottom, var(--accent), var(--accent-secondary));
-            border-radius: 1px;
-        }
-
-        .timeline-item {
-            position: relative;
-            padding: 1rem 1.25rem;
-            margin-bottom: 1rem;
-            background: var(--bg-card);
+        .feature-card {
+            background: var(--bg-primary);
             border: 1px solid var(--border);
-            border-radius: 0.75rem;
+            border-radius: 1.25rem;
+            padding: 2rem;
             transition: all 0.3s ease;
         }
 
-        .timeline-item:hover {
-            border-color: var(--accent);
-            transform: translateX(4px);
+        .feature-card:hover {
+            border-color: var(--border-hover);
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.1);
+            transform: translateY(-4px);
         }
 
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -1.75rem;
-            top: 1.25rem;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--accent);
-            border: 2px solid var(--bg-primary);
+        .feature-icon {
+            width: 3.5rem;
+            height: 3.5rem;
+            background: #ecfdf5;
+            border-radius: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
-        .timeline-item.mental_health::before {
-            background: #8b5cf6;
+        .feature-card h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
         }
 
-        .timeline-item.medication::before {
-            background: #10b981;
+        .feature-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
         }
 
-        .timeline-item.clinical::before {
-            background: #3b82f6;
+        /* ===== Architecture Section ===== */
+        .architecture {
+            background: var(--bg-primary);
         }
 
-        .timeline-item.note::before {
-            background: #f59e0b;
+        .arch-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            align-items: center;
         }
 
-        .timeline-item-header {
+        @media (min-width: 1024px) {
+            .arch-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 4rem;
+            }
+        }
+
+        .arch-content h2 {
+            font-size: 2.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.025em;
+            margin-bottom: 1rem;
+        }
+
+        .arch-content>p {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .arch-list {
+            list-style: none;
+        }
+
+        .arch-list li {
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            margin-bottom: 0.75rem;
+            padding: 0.875rem 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
         }
 
-        .timeline-type-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 2rem;
+        .arch-list li:last-child {
+            border-bottom: none;
+        }
+
+        .check-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            background: #d1fae5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-primary);
             font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .arch-visual {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+        }
+
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .arch-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .arch-box {
+            flex: 1;
+            max-width: 180px;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 0.75rem;
+            padding: 0.875rem 1rem;
+            text-align: center;
             font-weight: 600;
-            text-transform: uppercase;
+            font-size: 0.875rem;
+            color: #065f46;
         }
 
-        .timeline-type-badge.mental_health {
-            background: rgba(139, 92, 246, 0.2);
-            color: #8b5cf6;
+        .arch-box.purple {
+            background: #f3e8ff;
+            border-color: #d8b4fe;
+            color: #6b21a8;
         }
 
-        .timeline-type-badge.medication {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
+        .arch-arrow {
+            color: var(--text-muted);
+            font-size: 1.25rem;
         }
 
-        .timeline-type-badge.clinical {
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
+        .arch-connector {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.5rem;
         }
 
-        .timeline-type-badge.note {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
+        .tech-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            justify-content: center;
         }
 
-        .timeline-source {
+        .tech-badge {
+            padding: 0.5rem 0.875rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
             font-size: 0.8rem;
             color: var(--text-muted);
         }
 
-        .timeline-date {
-            margin-left: auto;
-            font-size: 0.75rem;
-            color: var(--text-muted);
+        /* ===== Demo Section ===== */
+        .demo {
+            background: white;
         }
 
-        .timeline-content {
-            color: var(--text-secondary);
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .code-block {
+            background: #1e293b;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            background: #334155;
+            border-bottom: 1px solid #475569;
+        }
+
+        .code-dots {
+            display: flex;
+            gap: 0.375rem;
+        }
+
+        .code-dot {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 50%;
+        }
+
+        .code-dot:nth-child(1) {
+            background: #ef4444;
+        }
+
+        .code-dot:nth-child(2) {
+            background: #f59e0b;
+        }
+
+        .code-dot:nth-child(3) {
+            background: #22c55e;
+        }
+
+        .code-title {
+            font-size: 0.875rem;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .code-content {
+            padding: 1.25rem;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.8rem;
+            line-height: 1.8;
+            color: #94a3b8;
+            overflow-x: auto;
+        }
+
+        .code-content .keyword {
+            color: #c084fc;
+        }
+
+        .code-content .string {
+            color: #86efac;
+        }
+
+        .code-content .url {
+            color: #7dd3fc;
+        }
+
+        .code-content .comment {
+            color: #64748b;
+        }
+
+        /* ===== CTA Section ===== */
+        .cta {
+            background: var(--bg-primary);
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            border-radius: 2rem;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .cta-box h2 {
+            font-size: 2.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .cta-box p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ===== Footer ===== */
+        .footer {
+            background: #064e3b;
+            color: #d1fae5;
+            padding: 4rem 0 2rem;
+            border-top: none;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+
+        .footer-brand p {
+            color: #d1fae5;
+            margin-top: 1rem;
             font-size: 0.9rem;
             line-height: 1.6;
+            opacity: 0.8;
         }
 
-        .timeline-content strong {
-            color: var(--text-primary);
+        .footer .logo-text {
+            color: white;
         }
 
-        .timeline-empty {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-muted);
+        .footer .logo-icon {
+            background: white;
+            color: #064e3b;
+        }
+
+        .footer-col h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1.25rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: #d1fae5;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+            opacity: 0.8;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            opacity: 1;
+        }
+
+        .footer-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #d1fae5;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+            opacity: 0.8;
+        }
+
+        .footer-bottom a {
+            color: white;
+            text-decoration: none;
+        }
+
+        /* ===== Animations ===== */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== Stats Banner ===== */
+        .stats-banner {
+            background-color: #064e3b;
+            color: white;
+            padding: 0;
+            margin-top: 2rem;
+        }
+
+        .stats-banner-container {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+            align-items: center;
+            padding: 5rem 1.5rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 1024px) {
+            .stats-banner-container {
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 6rem 1.5rem;
+            }
+        }
+
+        .stats-card-highlight {
+            background-color: var(--accent-primary);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            color: white;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
+        .stats-card-highlight h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.1;
+        }
+
+        .stats-card-highlight .highlight-subtitle {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            opacity: 0.95;
+        }
+
+        .stats-card-highlight p {
+            font-size: 1rem;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .stats-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            width: 100%;
+        }
+
+        @media (min-width: 1024px) {
+            .stats-metrics {
+                justify-content: flex-end;
+                margin-left: 4rem;
+            }
+        }
+
+        .metric-item h4 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+        }
+
+        .metric-item .metric-label {
+            font-size: 1.25rem;
+            color: #a7f3d0;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-item p {
+            font-size: 0.95rem;
+            color: #6ee7b7;
+            line-height: 1.5;
+            opacity: 0.9;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <a href="landing.html" class="back-link">
-            <span>←</span> Back to Home
-        </a>
+    <!-- Navigation -->
+    <header class="navbar">
+        <nav class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">🧠</div>
+                <span class="logo-text">MemoryAI</span>
+            </a>
 
-        <header class="header">
-            <h1>🧠 Healthcare Memory Assistant</h1>
-            <p>Evidence-grounded, hallucination-free patient memory system</p>
-            <div class="status-badge">
-                <span class="status-dot"></span>
-                <span id="healthStatus">Checking connection...</span>
-            </div>
-        </header>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#demo">API Demo</a></li>
+                <li><a href="http://localhost:8000/docs" target="_blank">Docs</a></li>
+            </ul>
 
-        <!-- Patient Summary Card (Default Hidden) -->
-        <div class="patient-summary-card" id="patientSummaryCard" style="display: none;">
-            <div class="patient-avatar">RV</div>
-            <div class="patient-info">
-                <h3>Rahul Verma</h3>
-                <div class="patient-details">
-                    <span>Male</span>
-                    <span>20–25</span>
-                    <span>College Student</span>
-                </div>
-            </div>
-            <div class="patient-meta">
-                <div class="meta-item">
-                    <span class="label">Patient ID</span>
-                    <span class="value">patient_001</span>
-                </div>
-                <div class="meta-item">
-                    <span class="label">Department</span>
-                    <span class="value">Mental Health</span>
-                </div>
-                <div class="meta-item">
-                    <span class="label">First Visit</span>
-                    <span class="value">Jan 2024</span>
-                </div>
-            </div>
-        </div>
+            <a href="dashboard.html" class="btn btn-primary nav-cta">
+                Open App
+                <span>→</span>
+            </a>
+        </nav>
+    </header>
 
-        <div class="tabs">
-            <button class="tab active" data-tab="search">🔍 Search</button>
-            <button class="tab" data-tab="timeline">📅 Timeline</button>
-            <button class="tab" data-tab="ingest">➕ Add Memory</button>
-            <button class="tab" data-tab="summary">📋 Summary</button>
-            <button class="tab" data-tab="demo">🎯 Demo</button>
-            <button class="tab" data-tab="guide">📚 Guide</button>
-        </div>
-
-        <!-- Search Panel -->
-        <div id="search" class="panel active">
-            <div class="card">
-                <h3>🔍 Ask a Question</h3>
-                <div class="form-group">
-                    <label>Patient ID</label>
-                    <div class="patient-input-group">
-                        <input type="text" id="searchPatientId" value="patient_001" placeholder="patient_001"
-                            oninput="debounce(loadPatientSuggestions, 600)()">
-                        <button class="btn-icon" onclick="loadPatientSuggestions()"
-                            title="Load patient data">🔄</button>
-                    </div>
-                </div>
-
-                <!-- Smart Suggestions -->
-                <div id="smartSuggestions" class="smart-suggestions">
-                    <div class="suggestion-header">
-                        <span class="suggestion-icon">💡</span>
-                        <span class="suggestion-title">Smart Suggestions</span>
-                        <span id="patientBadge" class="patient-badge">Loading...</span>
-                    </div>
-                    <div id="suggestionTags" class="suggestion-tags">
-                        <span class="loading-dots">Analyzing patient data...</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Your Question</label>
-                    <input type="text" id="searchQuery" placeholder="What symptoms did the patient report?">
-                </div>
-
-                <div class="action-buttons">
-                    <button class="btn btn-primary" onclick="search()">
-                        <span>🔍 Get Grounded Answer</span>
-                    </button>
-                    <button class="btn btn-secondary" onclick="clearSearch()">
-                        Clear
-                    </button>
-                </div>
-            </div>
-
-            <div id="searchResponse" class="response-area" style="display: none;"></div>
-        </div>
-
-        <!-- Timeline Panel -->
-        <div id="timeline" class="panel">
-            <div class="card">
-                <h3>📅 Patient Memory Timeline</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                    View chronological history of patient records and treatment progress.
-                </p>
-                <div class="form-group">
-                    <label>Patient ID</label>
-                    <div class="patient-input-group">
-                        <input type="text" id="timelinePatientId" value="patient_demo_1" placeholder="patient_demo_1">
-                        <button class="btn-icon" onclick="loadTimeline()" title="Load timeline">📅</button>
-                    </div>
-                </div>
-                <div class="quick-actions" style="margin-bottom: 1rem;">
-                    <span style="color: var(--text-muted); font-size: 0.8rem;">Demo patients:</span>
-                    <button class="quick-btn"
-                        onclick="document.getElementById('timelinePatientId').value='patient_demo_1';loadTimeline()">Demo
-                        1: Anxiety</button>
-                    <button class="quick-btn"
-                        onclick="document.getElementById('timelinePatientId').value='patient_demo_2';loadTimeline()">Demo
-                        2: Medication</button>
-                    <button class="quick-btn"
-                        onclick="document.getElementById('timelinePatientId').value='patient_demo_3';loadTimeline()">Demo
-                        3: Student</button>
-                </div>
-                <button class="btn btn-primary" onclick="loadTimeline()">
-                    <span>📅 Load Timeline</span>
-                </button>
-            </div>
-
-            <div id="timelineContainer" class="timeline-container" style="display: none;"></div>
-        </div>
-
-        <!-- Ingest Panel -->
-        <div id="ingest" class="panel">
-            <div class="card">
-                <h3>➕ Add Patient Memory</h3>
-                <div class="form-group">
-                    <label>Patient ID</label>
-                    <input type="text" id="ingestPatientId" value="patient_001">
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label>Memory Type</label>
-                        <select id="ingestType">
-                            <option value="mental_health">Mental Health</option>
-                            <option value="medication">Medication</option>
-                            <option value="clinical">Clinical</option>
-                            <option value="note">Note</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Source</label>
-                        <select id="ingestSource">
-                            <option value="session">Session</option>
-                            <option value="doctor">Doctor</option>
-                            <option value="import">Import</option>
-                        </select>
-                    </div>
-                    <div class="row-3">
-                        <div class="form-group">
-                            <label>Visit Date</label>
-                            <input type="date" id="ingestDate">
-                        </div>
-                        <div class="form-group">
-                            <label>Visit Type</label>
-                            <select id="ingestVisitType">
-                                <option value="Follow-up">Follow-up</option>
-                                <option value="Initial Consultation">Initial Consultation</option>
-                                <option value="Emergency">Emergency</option>
-                                <option value="Therapy Session">Therapy Session</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Clinician Role</label>
-                            <select id="ingestClinician">
-                                <option value="Counselor">Counselor</option>
-                                <option value="Psychiatrist">Psychiatrist</option>
-                                <option value="General Practitioner">General Practitioner</option>
-                                <option value="Nurse">Nurse</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Memory Content</label>
-                        <textarea id="ingestText" placeholder="Patient reports feeling anxious..."></textarea>
-                    </div>
-                    <button class="btn btn-primary" onclick="ingestMemory()"
-                        style="width: fit-content; padding: 0.6rem 1.5rem; font-size: 0.9rem; margin-top: 1rem; box-shadow: 0 4px 15px var(--accent-glow); border-radius: 0.25rem;">
-                        <span>Save Memory</span>
-                    </button>
-                </div>
-
-                <div id="ingestResponse" class="response-area" style="display: none;"></div>
-            </div>
-        </div>
-
-        <!-- Summary Panel -->
-        <div id="summary" class="panel">
-            <div class="card">
-                <h3>📋 Patient Summary</h3>
-                <div class="form-group">
-                    <label>Patient ID</label>
-                    <input type="text" id="summaryPatientId" value="patient_001">
-                </div>
-                <div style="display: flex; gap: 0.5rem;">
-                    <button class="btn btn-primary" onclick="getSummary()">Generate Summary</button>
-                    <button class="btn btn-secondary" onclick="getStats()">View Stats</button>
-                </div>
-            </div>
-
-            <div id="statsGrid" class="stats-grid" style="display: none;"></div>
-            <div id="summaryResponse" class="response-area" style="display: none;"></div>
-        </div>
-
-        <!-- Demo Panel -->
-        <div id="demo" class="panel">
-            <div class="card">
-                <h3>🎯 Anti-Hallucination Demo</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-                    This demo shows how the system refuses to answer questions when no evidence exists.
-                </p>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="card" style="margin: 0; background: var(--bg-secondary);">
-                        <h4 style="color: var(--success); margin-bottom: 1rem;">✅ Has Evidence</h4>
-                        <button class="btn btn-secondary" style="width: 100%; margin-bottom: 0.5rem;"
-                            onclick="demoQuery('anxiety symptoms racing thoughts', 'demoResult1')">
-                            "Anxiety symptoms"
-                        </button>
-                        <div id="demoResult1" class="demo-result"></div>
-                    </div>
-
-                    <div class="card" style="margin: 0; background: var(--bg-secondary);">
-                        <h4 style="color: var(--danger); margin-bottom: 1rem;">❌ No Evidence</h4>
-                        <button class="btn btn-secondary" style="width: 100%; margin-bottom: 0.5rem;"
-                            onclick="demoQuery('blood pressure heart rate', 'demoResult2')">
-                            "Blood pressure"
-                        </button>
-                        <div id="demoResult2" class="demo-result"></div>
-                    </div>
-                </div>
-
-                <div class="disclaimer" style="margin-top: 1.5rem;">
-                    <strong>Key Insight:</strong> When no evidence is found, the LLM is <em>never called</em>.
-                    The system returns a fixed "Insufficient data" response, guaranteeing zero hallucination.
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Guide Panel -->
-    <div id="guide" class="panel">
-        <div class="card">
-            <h3>📚 User Guide: Creating High-Quality Patient Records</h3>
-            <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-                Using structured data makes the AI significantly smarter during retrieval. Follow this guide to
-                ensure hospital-grade data quality.
-            </p>
-
-            <div class="guide-section" style="margin-bottom: 2rem;">
-                <h4
-                    style="color: var(--accent); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
-                    1. Patient Identification</h4>
-                <div class="guide-item" style="margin-bottom: 1rem;">
-                    <strong>Patient ID</strong>
-                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                        Unique identifier linking to the patient's file. Always use a consistent ID for the same
-                        person.<br>
-                        <em>Example: <code>patient_001</code> (Rahul Verma)</em>
+    <!-- Hero Section -->
+    <section class="hero section">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-content">
+                    <h1>
+                        Zero-Hallucination AI for<br>
+                        <span class="gradient-text">Healthcare Memory</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        A memory-first AI system for healthcare decision support. Evidence-based reasoning powered by
+                        semantic embeddings — no evidence, no answer.
                     </p>
-                </div>
-            </div>
 
-            <div class="guide-section" style="margin-bottom: 2rem;">
-                <h4
-                    style="color: var(--accent); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
-                    2. Data Origins (Source vs. Role)</h4>
+                    <div class="hero-buttons">
+                        <a href="dashboard.html" class="btn btn-primary btn-lg">
+                            Launch App
+                            <span>📱</span>
+                        </a>
+                        <a href="http://localhost:8000/docs" target="_blank" class="btn btn-secondary btn-lg">
+                            View API Docs
+                            <span>↗</span>
+                        </a>
+                    </div>
 
-                <div class="guide-item" style="margin-bottom: 1.5rem;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-                        <div>
-                            <strong
-                                style="color: var(--text-primary); border-bottom: 2px solid #3b82f6; padding-bottom: 2px;">
-                                📍 Source (Where?)
-                            </strong>
-                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                                Describes the <strong>origin channel</strong> of the information.
-                            </p>
-                            <ul
-                                style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; padding-left: 1rem;">
-                                <li style="margin-bottom: 0.25rem;"><strong>Session:</strong> Direct patient interaction
-                                    (Real-time).</li>
-                                <li style="margin-bottom: 0.25rem;"><strong>Doctor:</strong> Clinical notes/referrals
-                                    from a provider.</li>
-                                <li style="margin-bottom: 0.25rem;"><strong>Import:</strong> Bulk data from external EMR
-                                    systems.</li>
-                            </ul>
+                    <div class="hero-social">
+                        <div class="avatar-group">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="user">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="user">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="user">
                         </div>
-                        <div>
-                            <strong
-                                style="color: var(--text-primary); border-bottom: 2px solid #10b981; padding-bottom: 2px;">
-                                👨‍⚕️ Clinician Role (Who?)
-                            </strong>
-                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                                Describes the <strong>author's qualification</strong>.
-                            </p>
-                            <ul
-                                style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; padding-left: 1rem;">
-                                <li style="margin-bottom: 0.25rem;"><strong>Psychiatrist:</strong> MD, handles meds &
-                                    diagnosis.</li>
-                                <li style="margin-bottom: 0.25rem;"><strong>Counselor:</strong> PhD/MA, handles therapy
-                                    & talk.</li>
-                                <li style="margin-bottom: 0.25rem;"><strong>Nurse/GP:</strong> Handles vitals & general
-                                    care.</li>
-                            </ul>
+                        <div class="social-proof">
+                            <div class="stars">★★★★★</div>
+                            <p class="social-text">Trusted by <strong>Healthcare Professionals</strong></p>
                         </div>
                     </div>
                 </div>
 
-                <div class="guide-item" style="background: var(--bg-secondary); padding: 1rem; border-radius: 0.75rem;">
-                    <strong>💡 Common Combinations</strong>
-                    <table style="width: 100%; margin-top: 0.75rem; font-size: 0.85rem; border-collapse: collapse;">
-                        <tr style="border-bottom: 1px solid var(--border);">
-                            <th style="text-align: left; padding: 0.5rem; color: var(--text-secondary);">Source</th>
-                            <th style="text-align: left; padding: 0.5rem; color: var(--text-secondary);">Role</th>
-                            <th style="text-align: left; padding: 0.5rem; color: var(--text-secondary);">Use Case</th>
-                        </tr>
-                        <tr>
-                            <td style="padding: 0.5rem;">Session</td>
-                            <td style="padding: 0.5rem;">Counselor</td>
-                            <td style="padding: 0.5rem;">Therapy notes, patient feelings.</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 0.5rem;">Doctor</td>
-                            <td style="padding: 0.5rem;">Psychiatrist</td>
-                            <td style="padding: 0.5rem;">Diagnosis, medication changes.</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 0.5rem;">Doctor</td>
-                            <td style="padding: 0.5rem;">Nurse</td>
-                            <td style="padding: 0.5rem;">Routine vitals checkup.</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-
-            <div class="guide-section" style="margin-bottom: 2rem;">
-                <h4
-                    style="color: var(--accent); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
-                    3. Categorization</h4>
-                <div class="guide-item">
-                    <strong>Memory Type</strong>
-                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                        Categorizes the information for specific retrieval contexts.
-                    </p>
-                    <div
-                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 0.75rem;">
-                        <div style="background: var(--bg-primary); padding: 0.75rem; border-radius: 0.5rem;">
-                            <strong style="color: #8b5cf6;">Mental Health</strong>
-                            <p style="font-size: 0.8rem; margin-top: 0.25rem;">Moods, anxiety, depression symptoms,
-                                triggers.</p>
-                        </div>
-                        <div style="background: var(--bg-primary); padding: 0.75rem; border-radius: 0.5rem;">
-                            <strong style="color: #10b981;">Medication</strong>
-                            <p style="font-size: 0.8rem; margin-top: 0.25rem;">Prescriptions, side effects, dosage
-                                changes, adherence.</p>
-                        </div>
-                        <div style="background: var(--bg-primary); padding: 0.75rem; border-radius: 0.5rem;">
-                            <strong style="color: #3b82f6;">Clinical</strong>
-                            <p style="font-size: 0.8rem; margin-top: 0.25rem;">Physical stats (BP, Weight), lab
-                                results, diagnoses.</p>
+                <div class="hero-visual">
+                    <div class="hero-image">
+                        <div class="hero-card">
+                            <div class="hero-card-header">
+                                <div class="hero-card-icon">🧠</div>
+                                <div>
+                                    <div class="hero-card-title">Memory Assistant</div>
+                                    <div class="hero-card-subtitle">Evidence-based AI reasoning</div>
+                                </div>
+                            </div>
+                            <div class="hero-stats">
+                                <div class="stat-box">
+                                    <div class="stat-value">384D</div>
+                                    <div class="stat-label">Embeddings</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-value">0%</div>
+                                    <div class="stat-label">Hallucination</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-value">∞</div>
+                                    <div class="stat-label">Memories</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="guide-section">
-                <h4
-                    style="color: var(--accent); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
-                    4. Content Best Practices</h4>
-                <p style="font-size: 0.95rem; color: var(--text-primary); margin-bottom: 1rem;">
-                    The <strong>Memory Content</strong> is what the AI actually "reads". Be descriptive and
-                    specific. Natural language is preferred over bullet points.
-                </p>
-
-                <div
-                    style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); border-radius: 0.75rem; padding: 1rem;">
-                    <strong style="color: var(--success); display: block; margin-bottom: 0.5rem;">✅ Perfect
-                        &quot;Mental Health&quot; Entry Example:</strong>
-                    <p style="font-family: monospace; font-size: 0.9rem; color: var(--text-primary);">
-                        "Patient is a 24-year-old male student reporting persistent anxiety for 3 months. Reports
-                        'tightness in chest' and difficulty concentrating on studies. Sleep is disrupted; wakes up
-                        at 3 AM and cannot return to sleep. Denies suicidal ideation."
-                    </p>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div id="toast" class="toast"></div>
+    <!-- Stats Banner Section -->
+    <section class="stats-banner">
+        <div class="stats-banner-container">
+            <div class="stats-card-highlight fade-in">
+                <h3>#1 Choice</h3>
+                <div class="highlight-subtitle">For Clinical AI</div>
+                <p>We are dedicated to providing accurate, evidence-based AI reasoning, making us the top choice for
+                    safe healthcare integration.</p>
+            </div>
 
+            <div class="stats-metrics">
+                <div class="metric-item fade-in">
+                    <h4>384D</h4>
+                    <div class="metric-label">Semantic Precision</div>
+                    <p>High-dimensional embeddings for nuanced medical understanding.</p>
+                </div>
+
+                <div class="metric-item fade-in">
+                    <h4>0%</h4>
+                    <div class="metric-label">Hallucinations</div>
+                    <p>Strict evidence-based reasoning. No memory, no answer.</p>
+                </div>
+
+                <div class="metric-item fade-in">
+                    <h4>100%</h4>
+                    <div class="metric-label">Patient Privacy</div>
+                    <p>Complete isolation of patient data with scoped queries.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section features">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-tag">Core Capabilities</span>
+                <h2>Built for <span class="gradient-text">Reliable</span> Healthcare AI</h2>
+                <p>Every feature designed to prioritize accuracy and patient safety over artificial intelligence
+                    creativity.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Long-term Memory</h3>
+                    <p>Patient data stored as semantic embeddings in Qdrant vector database. Memories persist and are
+                        instantly retrievable.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">📊</div>
+                    <h3>Evidence-based Reasoning</h3>
+                    <p>LLM answers grounded exclusively in retrieved memories. Every response is traceable to stored
+                        patient data.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Anti-hallucination</h3>
+                    <p>No evidence, no answer. The LLM is only called when relevant memories exist in the database.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Patient Isolation</h3>
+                    <p>All queries scoped to patient_id. Complete data isolation ensures patient privacy and prevents
+                        leakage.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">📈</div>
+                    <h3>Evolving Memory</h3>
+                    <p>Confidence reinforcement for frequently accessed memories and time-based decay for outdated
+                        information.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="section architecture">
+        <div class="container">
+            <div class="arch-grid">
+                <div class="arch-content fade-in">
+                    <h2>Clean, <span class="gradient-text">Modular</span> Architecture</h2>
+                    <p>Designed with separation of concerns. Each component is independently testable and replaceable.
+                    </p>
+
+                    <ul class="arch-list">
+                        <li>
+                            <span class="check-icon">✓</span>
+                            <span>Embeddings: Local 384-dim vectors (sentence-transformers)</span>
+                        </li>
+                        <li>
+                            <span class="check-icon">✓</span>
+                            <span>LLM: OpenAI GPT-4 (for reasoning only)</span>
+                        </li>
+                        <li>
+                            <span class="check-icon">✓</span>
+                            <span>Vector DB: Qdrant with cosine similarity</span>
+                        </li>
+                        <li>
+                            <span class="check-icon">✓</span>
+                            <span>Async by default: All I/O operations are async</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="arch-visual fade-in">
+                    <div class="arch-diagram">
+                        <div class="arch-row">
+                            <div class="arch-box">FastAPI (API)</div>
+                        </div>
+
+                        <div class="arch-connector">↓</div>
+
+                        <div class="arch-row">
+                            <div class="arch-box">Retrieval Engine</div>
+                            <span class="arch-arrow">→</span>
+                            <div class="arch-box purple">Qdrant (Vectors)</div>
+                        </div>
+
+                        <div class="arch-connector">↓</div>
+
+                        <div class="arch-row">
+                            <div class="arch-box purple">Reasoning (LLM)</div>
+                            <span class="arch-arrow">←</span>
+                            <div class="arch-box">Evidence (Memory)</div>
+                        </div>
+                    </div>
+
+                    <div class="tech-badges">
+                        <span class="tech-badge">sentence-transformers</span>
+                        <span class="tech-badge">all-MiniLM-L6-v2</span>
+                        <span class="tech-badge">OpenAI GPT-4</span>
+                        <span class="tech-badge">Qdrant</span>
+                        <span class="tech-badge">FastAPI</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="section demo">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-tag">Quick Start</span>
+                <h2>Try the <span class="gradient-text">API</span></h2>
+                <p>Simple REST API with three powerful endpoints for memory management.</p>
+            </div>
+
+            <div class="demo-grid">
+                <div class="code-block fade-in">
+                    <div class="code-header">
+                        <div class="code-dots">
+                            <span class="code-dot"></span>
+                            <span class="code-dot"></span>
+                            <span class="code-dot"></span>
+                        </div>
+                        <span class="code-title">📝 1. Store Memory</span>
+                    </div>
+                    <pre class="code-content"><span class="keyword">curl</span> <span class="string">-X POST</span> <span class="url">http://localhost:8000/api/v1/memory</span> \
+  <span class="string">-H</span> <span class="string">"Content-Type: application/json"</span> \
+  <span class="string">-d</span> <span class="string">'{"patient_id":"patient_001",
+       "raw_text":"Anxiety and trouble sleeping",
+       "memory_type":"mental_health",
+       "source":"session"}'</span></pre>
+                </div>
+
+                <div class="code-block fade-in">
+                    <div class="code-header">
+                        <div class="code-dots">
+                            <span class="code-dot"></span>
+                            <span class="code-dot"></span>
+                            <span class="code-dot"></span>
+                        </div>
+                        <span class="code-title">🔍 2. Search Memories</span>
+                    </div>
+                    <pre class="code-content"><span class="keyword">curl</span> <span class="string">-X POST</span> <span class="url">http://localhost:8000/api/v1/search</span> \
+  <span class="string">-H</span> <span class="string">"Content-Type: application/json"</span> \
+  <span class="string">-d</span> <span class="string">'{"patient_id":"patient_001",
+       "query":"anxiety symptoms"}'</span></pre>
+                </div>
+
+                <div class="code-block fade-in">
+                    <div class="code-header">
+                        <div class="code-dots">
+                            <span class="code-dot"></span>
+                            <span class="code-dot"></span>
+                            <span class="code-dot"></span>
+                        </div>
+                        <span class="code-title">💬 3. Context Answer</span>
+                    </div>
+                    <pre class="code-content"><span class="keyword">curl</span> <span class="string">-X POST</span> <span class="url">http://localhost:8000/api/v1/search/context</span> \
+  <span class="string">-H</span> <span class="string">"Content-Type: application/json"</span> \
+  <span class="string">-d</span> <span class="string">'{"patient_id":"patient_001",
+       "query":"What symptoms were reported?"}'</span>
+
+<span class="comment"># Returns grounded answer OR "Insufficient data"</span></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section cta">
+        <div class="container">
+            <div class="cta-box fade-in">
+                <h2>Ready to <span class="gradient-text">Get Started</span>?</h2>
+                <p>Deploy locally with Docker or integrate the API into your healthcare application.</p>
+
+                <div class="cta-buttons">
+                    <a href="index.html" class="btn btn-primary btn-lg">
+                        🚀 Launch App
+                    </a>
+                    <a href="http://localhost:8000/docs" target="_blank" class="btn btn-secondary btn-lg">
+                        📖 View API Docs
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="logo">
+                        <div class="logo-icon">🧠</div>
+                        <span class="logo-text">MemoryAI</span>
+                    </a>
+                    <p>A memory-first AI system for healthcare decision support with zero hallucination.</p>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#architecture">Architecture</a></li>
+                        <li><a href="#demo">API Demo</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="http://localhost:8000/docs" target="_blank">API Docs</a></li>
+                        <li><a href="http://localhost:6333/dashboard" target="_blank">Qdrant Dashboard</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Open App</a></li>
+                        <li><a href="http://localhost:8000/api/v1/health" target="_blank">Health Check</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>⚠️ Prototype for demonstration purposes. Not validated for clinical use.</p>
+                <p>MIT License</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll Animation Script -->
     <script>
-        // Configuration
-        const CONFIG = {
-            API_LOCAL: 'http://localhost:8000/api/v1',
-            API_PROD: 'https://healthcare-memory-assistant.onrender.com/api/v1'
-        };
-
-        // Determine API URL based on hostname
-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const API_BASE = isLocal ? CONFIG.API_LOCAL : CONFIG.API_PROD;
-
-        // Utility: Debounce
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
+        document.addEventListener('DOMContentLoaded', function () {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
             };
-        }
 
-        // Tab switching
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-                tab.classList.add('active');
-                document.getElementById(tab.dataset.tab).classList.add('active');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
             });
-        });
-
-        // Health check
-        async function checkHealth() {
-            try {
-                const res = await fetch(`${API_BASE}/health`);
-                const data = await res.json();
-                const status = document.getElementById('healthStatus');
-                if (data.status === 'healthy') {
-                    status.textContent = `Connected • Qdrant ${data.qdrant}`;
-                } else {
-                    status.textContent = 'Degraded';
-                }
-            } catch (e) {
-                document.getElementById('healthStatus').textContent = 'Disconnected';
-            }
-        }
-        checkHealth();
-
-        // =============================================
-        // SMART SUGGESTIONS
-        // =============================================
-
-        // Load suggestions when page loads
-        setTimeout(() => loadPatientSuggestions(), 500);
-
-        // Load patient suggestions
-        async function loadPatientSuggestions() {
-            const patientId = document.getElementById('searchPatientId').value;
-            const suggestionsDiv = document.getElementById('suggestionTags');
-            const badge = document.getElementById('patientBadge');
-
-            suggestionsDiv.innerHTML = '<span class="loading-dots">Analyzing patient records...</span>';
-            badge.textContent = "Analyzing...";
-            badge.className = 'patient-badge';
-
-            try {
-                // Fetch dynamic suggestions
-                const res = await fetch(`${API_BASE}/patient/${patientId}/suggestions`);
-                if (!res.ok) throw new Error("Failed to load suggestions");
-
-                const data = await res.json();
-
-                if (data.suggestions && data.suggestions.length > 0) {
-                    // Map simple strings to object structure
-                    const suggestionObjs = data.suggestions.map(s => ({
-                        text: s.length > 40 ? s.substring(0, 37) + '...' : s,
-                        query: s,
-                        icon: '💡'
-                    }));
-                    renderSuggestions(suggestionsDiv, suggestionObjs);
-
-                    badge.classList.add('access-granted');
-                    badge.textContent = `Analyzed ${data.based_on_count} records`;
-                } else {
-                    suggestionsDiv.innerHTML = '<span class="tag">No specific suggestions found.</span>';
-                    badge.textContent = "No Data";
-                }
-
-            } catch (e) {
-                console.error("Suggestion Error:", e);
-                // Fallback suggestions
-                const fallbacks = [
-                    { icon: '🧠', text: 'Psychological Symptoms', query: 'What are the reported psychological symptoms?' },
-                    { icon: '💊', text: 'Medication Review', query: 'List current medications and side effects.' },
-                    { icon: '📊', text: 'Treatment Progress', query: 'Summarize treatment progress over the last month.' }
-                ];
-                renderSuggestions(suggestionsDiv, fallbacks);
-                badge.classList.add('access-denied');
-                badge.textContent = 'Offline Mode';
-            }
-        }
-
-        function renderSuggestions(container, suggestions) {
-            container.innerHTML = suggestions.map(s => `
-                <button class="suggestion-tag" onclick="setQuery('${s.query.replace(/'/g, "\\'")}')">
-                    <span class="tag-icon">${s.icon}</span>
-                    ${s.text}
-                </button>
-            `).join('');
-        }
-
-        function setQuery(text) {
-            const input = document.getElementById('searchQuery');
-            input.value = text;
-            input.focus();
-        }
-
-        // Clear search
-        function clearSearch() {
-            document.getElementById('searchQuery').value = '';
-            document.getElementById('searchResponse').style.display = 'none';
-        }
-
-        // =============================================
-        // TIMELINE FUNCTIONS
-        // =============================================
-
-        async function loadTimeline() {
-            const patientId = document.getElementById('timelinePatientId').value;
-            const container = document.getElementById('timelineContainer');
-
-            container.style.display = 'block';
-            container.innerHTML = '<div class="loading"><div class="spinner"></div>Loading timeline...</div>';
-
-            try {
-                // Get patient stats
-                const statsRes = await fetch(`${API_BASE}/patient/${patientId}/stats`);
-                const stats = await statsRes.json();
-
-                // Get search to retrieve memories (using a broad query)
-                const searchRes = await fetch(`${API_BASE}/search`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        patient_id: patientId,
-                        query: 'patient history symptoms treatment',
-                        limit: 50
-                    })
-                });
-                const searchData = await searchRes.json();
-
-                if (stats.total_memories === 0) {
-                    container.innerHTML = `
-                        <div class="timeline-empty">
-                            <p>📭 No records found for ${patientId}</p>
-                            <p style="font-size: 0.9rem;">Try loading demo data or add memories first.</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                renderTimeline(container, patientId, stats, searchData.evidence || []);
-
-            } catch (e) {
-                container.innerHTML = `<div class="timeline-empty">Error loading timeline: ${e.message}</div>`;
-            }
-        }
-
-        function renderTimeline(container, patientId, stats, memories) {
-            const typeIcons = {
-                mental_health: '🧠',
-                medication: '💊',
-                clinical: '🏥',
-                note: '📝'
-            };
-
-            const sortedMemories = memories.sort((a, b) =>
-                new Date(b.created_at || 0) - new Date(a.created_at || 0)
-            );
-
-            let html = `
-                <div class="timeline-header">
-                    <h4>📋 ${patientId}</h4>
-                    <div class="timeline-stats">
-                        <div class="timeline-stat">
-                            <div class="timeline-stat-value">${stats.total_memories}</div>
-                            <div class="timeline-stat-label">Total Records</div>
-                        </div>
-                        ${Object.entries(stats.by_type || {}).map(([type, count]) => `
-                            <div class="timeline-stat">
-                                <div class="timeline-stat-value">${count}</div>
-                                <div class="timeline-stat-label">${typeIcons[type] || '📄'} ${type.replace('_', ' ')}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-                <div class="timeline">
-            `;
-
-            if (sortedMemories.length === 0) {
-                html += `<div class="timeline-empty">No detailed records retrieved. Try using the Search tab for specific queries.</div>`;
-            } else {
-                sortedMemories.forEach((memory, index) => {
-                    const type = memory.memory_type || 'note';
-                    const source = memory.source || 'unknown';
-                    const date = memory.created_at ? new Date(memory.created_at).toLocaleDateString() : 'Recent';
-                    const content = memory.content || '';
-
-                    // Get first line as title
-                    const lines = content.split('\n').filter(l => l.trim());
-                    const title = lines[0]?.substring(0, 60) + (lines[0]?.length > 60 ? '...' : '') || 'Memory Record';
-                    const preview = lines.slice(1, 3).join(' ').substring(0, 200);
-
-                    html += `
-                        <div class="timeline-item ${type}">
-                            <div class="timeline-item-header">
-                                <span class="timeline-type-badge ${type}">${typeIcons[type] || '📄'} ${type.replace('_', ' ')}</span>
-                                <span class="timeline-source">via ${source}</span>
-                                <span class="timeline-date">${date}</span>
-                            </div>
-                            <div class="timeline-content">
-                                <strong>${title}</strong>
-                                ${preview ? `<p style="margin-top: 0.5rem; font-size: 0.85rem;">${preview}...</p>` : ''}
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-
-            html += '</div>';
-            container.innerHTML = html;
-        }
-
-        // Set query helper
-        function setQuery(q) {
-            document.getElementById('searchQuery').value = q;
-        }
-
-        // Search
-        async function search() {
-            const patientId = document.getElementById('searchPatientId').value;
-            const query = document.getElementById('searchQuery').value;
-
-            if (!query) {
-                showToast('Please enter a question', 'error');
-                return;
-            }
-
-            const responseDiv = document.getElementById('searchResponse');
-            responseDiv.style.display = 'block';
-            responseDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Searching...</div>';
-
-            try {
-                const res = await fetch(`${API_BASE}/search/context`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ patient_id: patientId, query })
-                });
-                const data = await res.json();
-
-                responseDiv.innerHTML = renderAnswer(data);
-            } catch (e) {
-                responseDiv.innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;
-            }
-        }
-
-        // Render answer with proper formatting
-        function renderAnswer(data) {
-            const hasContext = data.has_context;
-            return `
-                <div class="response-header">
-                    <div class="response-meta">
-                        <span class="meta-badge ${hasContext ? 'success' : 'warning'}">
-                            ${hasContext ? '✓ Evidence Found' : '✗ No Evidence'}
-                        </span>
-                        <span class="meta-badge">📚 ${data.evidence_count} sources</span>
-                        ${data.sources_used?.length ? `<span class="meta-badge">🏷️ ${data.sources_used.join(', ')}</span>` : ''}
-                    </div>
-                </div>
-                <div class="answer-text">${data.answer_text}</div>
-                ${data.disclaimer && data.disclaimer !== 'No patient records matched this query.' ? `
-                    <div class="disclaimer">${data.disclaimer.replace('---', '').trim()}</div>
-                ` : ''}
-            `;
-        }
-
-        // Format answer text with proper structure
-        function formatAnswerText(text) {
-            if (!text) return '';
-
-            // First, try to normalize the text by adding newlines before patterns
-            // This helps when LLM returns text without proper line breaks
-            let normalized = text
-                // Add newline before section headers (word(s) followed by :)
-                .replace(/([.!?])\s*([A-Z][a-zA-Z\s&]+:)/g, '$1\n\n$2')
-                // Add newline after section headers
-                .replace(/([A-Z][a-zA-Z\s&]+:)\s*/g, '$1\n')
-                // Add newline before numbered items
-                .replace(/(\d+)([.)])\s*([A-Z])/g, '\n$1$2 $3')
-                // Add newline before bullet points
-                .replace(/([.!?])\s*[-•*]\s*/g, '$1\n- ')
-                // Clean up multiple newlines
-                .replace(/\n{3,}/g, '\n\n');
-
-            // Split into lines
-            let lines = normalized.split('\n');
-            let html = '';
-            let inList = false;
-            let listType = null; // 'bullet' or 'number'
-
-            for (let line of lines) {
-                line = line.trim();
-                if (!line) {
-                    if (inList) {
-                        html += '</ul>';
-                        inList = false;
-                        listType = null;
-                    }
-                    continue;
-                }
-
-                // Check for section headers (ends with : and not too long)
-                const headerMatch = line.match(/^([A-Z][^:]{2,60}):?\*?$/);
-                if (headerMatch || (line.endsWith(':') && line.length < 60 && !line.startsWith('-'))) {
-                    if (inList) {
-                        html += '</ul>';
-                        inList = false;
-                    }
-                    const headerText = line.replace(/\*+/g, '').replace(/:$/, '');
-                    html += `<h4 class="section-header">${headerText}</h4>`;
-                    continue;
-                }
-
-                // Check for numbered items (1. or 1) or just number at start)
-                const numberedMatch = line.match(/^(\d+)[.)]\s*(.+)/);
-                if (numberedMatch) {
-                    if (!inList || listType !== 'number') {
-                        if (inList) html += '</ul>';
-                        html += '<ul class="symptom-list numbered">';
-                        inList = true;
-                        listType = 'number';
-                    }
-                    html += `<li><span class="list-number">${numberedMatch[1]}</span>${formatInlineStyles(numberedMatch[2])}</li>`;
-                    continue;
-                }
-
-                // Check for bullet points (- or * or •)
-                const bulletMatch = line.match(/^[-*•]\s*(.+)/);
-                if (bulletMatch) {
-                    if (!inList || listType !== 'bullet') {
-                        if (inList) html += '</ul>';
-                        html += '<ul class="symptom-list">';
-                        inList = true;
-                        listType = 'bullet';
-                    }
-                    html += `<li>${formatInlineStyles(bulletMatch[1])}</li>`;
-                    continue;
-                }
-
-                // Regular text - check if it looks like a list item without bullet
-                if (inList && line.length < 100 && !line.includes('.') && !line.endsWith(':')) {
-                    // Probably a continuation of the list without bullet
-                    html += `<li>${formatInlineStyles(line)}</li>`;
-                    continue;
-                }
-
-                // Regular paragraph
-                if (inList) {
-                    html += '</ul>';
-                    inList = false;
-                    listType = null;
-                }
-                html += `<p>${formatInlineStyles(line)}</p>`;
-            }
-
-            if (inList) html += '</ul>';
-
-            // If no formatting was applied, return nicely wrapped text
-            if (!html.includes('<h4') && !html.includes('<ul')) {
-                return `<p>${formatInlineStyles(text)}</p>`;
-            }
-
-            return html;
-        }
-
-        // Format inline styles (bold, italic, quoted terms)
-        function formatInlineStyles(text) {
-            if (!text) return '';
-            // Bold: **text** or *text* at start
-            text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-            text = text.replace(/^\*([^*]+)\*$/, '<strong>$1</strong>');
-            // Italic markers
-            text = text.replace(/_(.+?)_/g, '<em>$1</em>');
-            // Quoted terms
-            text = text.replace(/"([^"]+)"/g, '<span class="quoted-term">"$1"</span>');
-            return text;
-        }
-
-        // Ingest memory
-        async function ingestMemory() {
-            const patientId = document.getElementById('ingestPatientId').value;
-            const rawText = document.getElementById('ingestText').value;
-            const memoryType = document.getElementById('ingestType').value;
-            const source = document.getElementById('ingestSource').value;
-
-            // Get visit metadata
-            const visitDate = document.getElementById('ingestDate').value || new Date().toISOString().split('T')[0];
-            const visitType = document.getElementById('ingestVisitType').value;
-            const clinicianRole = document.getElementById('ingestClinician').value;
-
-            if (!rawText) {
-                showToast('Please enter memory content', 'error');
-                return;
-            }
-
-            const responseDiv = document.getElementById('ingestResponse');
-            responseDiv.style.display = 'block';
-            responseDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Saving...</div>';
-
-            try {
-                const res = await fetch(`${API_BASE}/memory`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        patient_id: patientId,
-                        raw_text: rawText,
-                        memory_type: memoryType,
-                        source,
-                        visit: {
-                            visit_date: visitDate,
-                            visit_type: visitType,
-                            clinician_role: clinicianRole
-                        },
-                        profile: {
-                            // Basic logic to attach profile if patient_001
-                            full_name: patientId === 'patient_001' ? 'Rahul Verma' : undefined,
-                            department: 'Mental Health'
-                        }
-                    })
-                });
-                const data = await res.json();
-
-                const action = data.action === 'reinforced' ?
-                    '🔄 Similar memory reinforced!' :
-                    '✅ Memory created!';
-
-                responseDiv.innerHTML = `
-                    <div class="response-header">
-                        <div class="response-meta">
-                            <span class="meta-badge success">${action}</span>
-                            <span class="meta-badge">📦 ${data.chunks_stored} chunk(s)</span>
-                        </div>
-                    </div>
-                    <div class="answer-text">
-                        <strong>Action:</strong> ${data.action}<br>
-                        <strong>Point ID:</strong> <code>${data.point_ids[0]}</code>
-                    </div>
-                `;
-
-                showToast(action, 'success');
-                document.getElementById('ingestText').value = '';
-            } catch (e) {
-                responseDiv.innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;
-                showToast('Failed to save memory', 'error');
-            }
-        }
-
-        // Get stats
-        async function getStats() {
-            const patientId = document.getElementById('summaryPatientId').value;
-            const statsGrid = document.getElementById('statsGrid');
-
-            try {
-                const res = await fetch(`${API_BASE}/patient/${patientId}/stats`);
-                const data = await res.json();
-
-                statsGrid.style.display = 'grid';
-                statsGrid.innerHTML = `
-                    <div class="stat-card">
-                        <div class="stat-value">${data.total_memories}</div>
-                        <div class="stat-label">Total Memories</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">${data.active_memories}</div>
-                        <div class="stat-label">Active</div>
-                    </div>
-                    ${Object.entries(data.by_type || {}).map(([type, count]) => `
-                        <div class="stat-card">
-                            <div class="stat-value">${count}</div>
-                            <div class="stat-label">${type}</div>
-                        </div>
-                    `).join('')}
-                `;
-            } catch (e) {
-                showToast('Failed to load stats', 'error');
-            }
-        }
-
-        // Get summary
-        async function getSummary() {
-            const patientId = document.getElementById('summaryPatientId').value;
-            const responseDiv = document.getElementById('summaryResponse');
-
-            responseDiv.style.display = 'block';
-            responseDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Generating summary...</div>';
-
-            try {
-                const res = await fetch(`${API_BASE}/patient/${patientId}/summary`);
-                if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.detail || `Server Error ${res.status}`);
-                }
-                const data = await res.json();
-
-                responseDiv.innerHTML = `
-                    <div class="response-header">
-                        <div class="response-meta">
-                            <span class="meta-badge ${data.has_context ? 'success' : 'warning'}">
-                                ${data.has_context ? '✓ Has Records' : '✗ No Records'}
-                            </span>
-                            <span class="meta-badge">📝 ${data.memory_count} memories</span>
-                        </div>
-                    </div>
-                    <div class="answer-text">${(data.summary || '').replace(/\n/g, '<br>').replace(/###/g, '<strong>').replace(/\*\*/g, '')}</div>
-                    <div class="disclaimer">${(data.disclaimer || '').replace('---', '').trim()}</div>
-                `;
-            } catch (e) {
-                responseDiv.innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;
-            }
-        }
-
-        // Demo query
-        async function demoQuery(query, resultId) {
-            const resultDiv = document.getElementById(resultId);
-            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-
-            try {
-                const res = await fetch(`${API_BASE}/search/context`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ patient_id: 'patient_001', query })
-                });
-
-                if (!res.ok) {
-                    const err = await res.json().catch(() => ({ detail: res.statusText }));
-                    throw new Error(err.detail || `Server Error ${res.status}`);
-                }
-
-                const data = await res.json();
-
-                // Guard against missing answer_text
-                const answerText = data.answer_text || "No response text available.";
-                const shortText = answerText.substring(0, 150) + (answerText.length > 150 ? '...' : '');
-
-                resultDiv.innerHTML = `
-                    <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-card); border-radius: 0.5rem;">
-                        <div class="meta-badge ${data.has_context ? 'success' : 'warning'}" style="margin-bottom: 0.5rem;">
-                            ${data.has_context ? '✓ Evidence Found' : '✗ No Evidence'}
-                        </div>
-                        <p style="font-size: 0.85rem; color: var(--text-secondary);">
-                            ${shortText}
-                        </p>
-                    </div>
-                `;
-            } catch (e) {
-                resultDiv.innerHTML = `<span style="color: var(--danger); font-size: 0.9rem;">Error: ${e.message}</span>`;
-                console.error("Demo Query Error:", e);
-            }
-        }
-
-        // Toast notification
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast ${type} show`;
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        // Initialize Demo Data and Interactions
-        document.addEventListener('DOMContentLoaded', () => {
-            // Check if patient_001 is active in local storage or URL
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('patient') === 'patient_001') {
-                const card = document.getElementById('patientSummaryCard');
-                if (card) card.style.display = 'flex';
-            }
-
-            // Add click handler for suggestions to simulation loading patient data
-            // We use a timeout to ensure suggestions are rendered if they are dynamic
-            setTimeout(() => {
-                const suggestions = document.querySelectorAll('.suggestion-tag');
-                suggestions.forEach(tag => {
-                    tag.addEventListener('click', () => {
-                        const text = tag.textContent || "";
-                        // If clicking "Rahul Verma", show the summary card
-                        if (text.includes('Rahul') || text.includes('001') || text.includes('Anxiety')) {
-                            const card = document.getElementById('patientSummaryCard');
-                            if (card) card.style.display = 'flex';
-
-                            // Pre-fill inputs with the demo patient ID
-                            const pidInputs = ['searchPatientId', 'timelinePatientId', 'ingestPatientId', 'summaryPatientId'];
-                            pidInputs.forEach(id => {
-                                const el = document.getElementById(id);
-                                if (el) el.value = 'patient_001';
-                            });
-
-                            // Trigger a relevant query if we are in the search tab
-                            if (document.querySelector('.tab.active').getAttribute('data-tab') === 'search') {
-                                const query = document.getElementById('searchQuery');
-                                if (query && !query.value) query.value = 'Show me recent anxiety symptoms';
-                            }
-                        }
-                    });
-                });
-            }, 1000);
         });
     </script>
 </body>
