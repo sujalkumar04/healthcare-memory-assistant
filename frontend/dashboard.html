@@ -1052,6 +1052,31 @@
                     <input type="text" id="searchQuery" placeholder="What symptoms did the patient report?">
                 </div>
 
+                <!-- Modality Filter -->
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="margin-bottom: 0.5rem;">Filter by Modality</label>
+                    <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+                        <label
+                            style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem; color: var(--text-secondary);">
+                            <input type="checkbox" id="filterText" checked
+                                style="width: 18px; height: 18px; accent-color: var(--accent);">
+                            📝 Text
+                        </label>
+                        <label
+                            style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem; color: var(--text-secondary);">
+                            <input type="checkbox" id="filterDocument" checked
+                                style="width: 18px; height: 18px; accent-color: var(--accent);">
+                            📄 Documents
+                        </label>
+                        <label
+                            style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem; color: var(--text-secondary);">
+                            <input type="checkbox" id="filterImage"
+                                style="width: 18px; height: 18px; accent-color: var(--accent);">
+                            🖼️ Images
+                        </label>
+                    </div>
+                </div>
+
                 <div class="action-buttons">
                     <button class="btn btn-primary" onclick="search()">
                         <span>🔍 Get Grounded Answer</span>
@@ -1160,6 +1185,116 @@
                 </div>
 
                 <div id="ingestResponse" class="response-area" style="display: none;"></div>
+            </div>
+
+            <!-- Document Upload Card -->
+            <div class="card">
+                <h3>📄 Upload Document (PDF)</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">
+                    Upload PDF documents to extract and store text content as patient memory.
+                </p>
+                <div class="form-group">
+                    <label>Patient ID</label>
+                    <input type="text" id="docPatientId" value="patient_001">
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label>Memory Type</label>
+                        <select id="docMemoryType">
+                            <option value="clinical">Clinical</option>
+                            <option value="mental_health">Mental Health</option>
+                            <option value="medication">Medication</option>
+                            <option value="note">Note</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>PDF File</label>
+                        <input type="file" id="docFile" accept=".pdf"
+                            style="padding: 0.5rem; background: var(--bg-input);">
+                    </div>
+                </div>
+                <div id="docFileName" style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;"></div>
+                <button class="btn btn-primary" onclick="uploadDocument()"
+                    style="width: fit-content; padding: 0.6rem 1.5rem; font-size: 0.9rem;">
+                    <span>📤 Upload Document</span>
+                </button>
+                <div id="docResponse" class="response-area" style="display: none;"></div>
+            </div>
+
+            <!-- Image Upload Card -->
+            <div class="card">
+                <h3>🖼️ Upload Image</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">
+                    Upload medical images (PNG, JPEG). Images are stored as contextual references only - no diagnosis.
+                </p>
+                <div class="form-group">
+                    <label>Patient ID</label>
+                    <input type="text" id="imgPatientId" value="patient_001">
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label>Memory Type</label>
+                        <select id="imgMemoryType">
+                            <option value="clinical">Clinical</option>
+                            <option value="diagnostic">Diagnostic</option>
+                            <option value="wound">Wound</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Image File</label>
+                        <input type="file" id="imgFile" accept=".png,.jpg,.jpeg" onchange="previewImage()"
+                            style="padding: 0.5rem; background: var(--bg-input);">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description (optional)</label>
+                    <input type="text" id="imgDescription" placeholder="e.g., Chest X-ray anterior view">
+                </div>
+                <div id="imgPreview" style="margin-bottom: 1rem; display: none;">
+                    <img id="imgPreviewImg"
+                        style="max-width: 200px; max-height: 150px; border-radius: 0.5rem; border: 1px solid var(--border);">
+                </div>
+                <button class="btn btn-primary" onclick="uploadImage()"
+                    style="width: fit-content; padding: 0.6rem 1.5rem; font-size: 0.9rem;">
+                    <span>📤 Upload Image</span>
+                </button>
+                <div id="imgResponse" class="response-area" style="display: none;"></div>
+            </div>
+
+            <!-- Audio Upload Card -->
+            <div class="card">
+                <h3>🎤 Upload Audio</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">
+                    Upload audio recordings (MP3, WAV, M4A, WEBM, OGG). Audio is transcribed and stored as text memory.
+                </p>
+                <div class="form-group">
+                    <label>Patient ID</label>
+                    <input type="text" id="audioPatientId" value="patient_001">
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label>Memory Type</label>
+                        <select id="audioMemoryType">
+                            <option value="session">Session Recording</option>
+                            <option value="mental_health">Mental Health</option>
+                            <option value="clinical">Clinical Notes</option>
+                            <option value="note">General Note</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Audio File (max 25MB)</label>
+                        <input type="file" id="audioFile" accept=".mp3,.wav,.m4a,.webm,.ogg,.flac"
+                            style="padding: 0.5rem; background: var(--bg-input);">
+                    </div>
+                </div>
+                <div id="audioFileName" style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+                </div>
+                <button class="btn btn-primary" onclick="uploadAudio()"
+                    style="width: fit-content; padding: 0.6rem 1.5rem; font-size: 0.9rem;">
+                    <span>🎙️ Transcribe & Upload</span>
+                </button>
+                <div id="audioResponse" class="response-area" style="display: none;"></div>
             </div>
         </div>
 
@@ -1619,6 +1754,17 @@
                 return;
             }
 
+            // Collect modality filters
+            const modalities = [];
+            if (document.getElementById('filterText').checked) modalities.push('text');
+            if (document.getElementById('filterDocument').checked) modalities.push('document');
+            if (document.getElementById('filterImage').checked) modalities.push('image');
+
+            if (modalities.length === 0) {
+                showToast('Please select at least one modality', 'error');
+                return;
+            }
+
             const responseDiv = document.getElementById('searchResponse');
             responseDiv.style.display = 'block';
             responseDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Searching...</div>';
@@ -1627,11 +1773,15 @@
                 const res = await fetch(`${API_BASE}/search/context`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ patient_id: patientId, query })
+                    body: JSON.stringify({
+                        patient_id: patientId,
+                        query,
+                        modalities: modalities
+                    })
                 });
                 const data = await res.json();
 
-                responseDiv.innerHTML = renderAnswer(data);
+                responseDiv.innerHTML = renderAnswer(data, modalities);
             } catch (e) {
                 responseDiv.innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;
             }
@@ -1938,6 +2088,222 @@
             } catch (e) {
                 resultDiv.innerHTML = `<span style="color: var(--danger); font-size: 0.9rem;">Error: ${e.message}</span>`;
                 console.error("Demo Query Error:", e);
+            }
+        }
+
+        // ====== MULTIMODAL UPLOAD HANDLERS ======
+
+        // Document (PDF) Upload
+        async function uploadDocument() {
+            const patientId = document.getElementById('docPatientId').value;
+            const memoryType = document.getElementById('docMemoryType').value;
+            const fileInput = document.getElementById('docFile');
+            const responseDiv = document.getElementById('docResponse');
+
+            if (!patientId || !fileInput.files.length) {
+                showToast('Please select a PDF file and enter Patient ID', 'error');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            if (!file.name.toLowerCase().endsWith('.pdf')) {
+                showToast('Only PDF files are supported', 'error');
+                return;
+            }
+
+            responseDiv.style.display = 'block';
+            responseDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Uploading and processing PDF...</div>';
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('patient_id', patientId);
+            formData.append('memory_type', memoryType);
+
+            try {
+                const res = await fetch(`${API_BASE}/memory/document`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({ detail: res.statusText }));
+                    throw new Error(err.detail || `Server Error ${res.status}`);
+                }
+
+                const data = await res.json();
+                responseDiv.innerHTML = `
+                    <div class="response-header">
+                        <div class="response-meta">
+                            <span class="meta-badge success">✓ Document Uploaded</span>
+                            <span class="meta-badge">📄 ${data.filename}</span>
+                            <span class="meta-badge">📊 ${data.chunks_created} chunks</span>
+                        </div>
+                    </div>
+                    <div class="answer-text">
+                        <strong>Document processed successfully!</strong><br>
+                        ${data.extracted_chars} characters extracted from ${data.pages_processed} pages.<br>
+                        Modality: <span style="color: var(--accent);">${data.modality}</span>
+                    </div>
+                `;
+                showToast('Document uploaded successfully!', 'success');
+                fileInput.value = '';
+            } catch (e) {
+                responseDiv.innerHTML = `<div class="empty-state" style="color: var(--danger);">Error: ${e.message}</div>`;
+                showToast('Document upload failed', 'error');
+            }
+        }
+
+        // Image Upload
+        async function uploadImage() {
+            const patientId = document.getElementById('imgPatientId').value;
+            const memoryType = document.getElementById('imgMemoryType').value;
+            const description = document.getElementById('imgDescription').value;
+            const fileInput = document.getElementById('imgFile');
+            const responseDiv = document.getElementById('imgResponse');
+
+            if (!patientId || !fileInput.files.length) {
+                showToast('Please select an image and enter Patient ID', 'error');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const validExts = ['.png', '.jpg', '.jpeg'];
+            const ext = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+            if (!validExts.includes(ext)) {
+                showToast('Only PNG and JPEG images are supported', 'error');
+                return;
+            }
+
+            responseDiv.style.display = 'block';
+            responseDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Uploading and processing image...</div>';
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('patient_id', patientId);
+            formData.append('memory_type', memoryType);
+            formData.append('description', description);
+
+            try {
+                const res = await fetch(`${API_BASE}/memory/image`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({ detail: res.statusText }));
+                    throw new Error(err.detail || `Server Error ${res.status}`);
+                }
+
+                const data = await res.json();
+                responseDiv.innerHTML = `
+                    <div class="response-header">
+                        <div class="response-meta">
+                            <span class="meta-badge success">✓ Image Uploaded</span>
+                            <span class="meta-badge">🖼️ ${data.filename}</span>
+                            <span class="meta-badge">${data.width}x${data.height}</span>
+                        </div>
+                    </div>
+                    <div class="answer-text">
+                        <strong>Image stored successfully!</strong><br>
+                        Format: ${data.format}, Modality: <span style="color: var(--accent);">${data.modality}</span><br>
+                        <em style="color: var(--text-muted); font-size: 0.85rem;">⚠️ Images are contextual references only - no medical analysis performed.</em>
+                    </div>
+                `;
+                showToast('Image uploaded successfully!', 'success');
+                fileInput.value = '';
+                document.getElementById('imgPreview').style.display = 'none';
+                document.getElementById('imgDescription').value = '';
+            } catch (e) {
+                responseDiv.innerHTML = `<div class="empty-state" style="color: var(--danger);">Error: ${e.message}</div>`;
+                showToast('Image upload failed', 'error');
+            }
+        }
+
+        // Image Preview
+        function previewImage() {
+            const fileInput = document.getElementById('imgFile');
+            const preview = document.getElementById('imgPreview');
+            const previewImg = document.getElementById('imgPreviewImg');
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // Audio Upload
+        async function uploadAudio() {
+            const patientId = document.getElementById('audioPatientId').value;
+            const memoryType = document.getElementById('audioMemoryType').value;
+            const fileInput = document.getElementById('audioFile');
+            const responseDiv = document.getElementById('audioResponse');
+
+            if (!patientId || !fileInput.files.length) {
+                showToast('Please select an audio file and enter Patient ID', 'error');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const validExts = ['.mp3', '.wav', '.m4a', '.webm', '.ogg', '.flac'];
+            const ext = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+            if (!validExts.includes(ext)) {
+                showToast('Unsupported audio format. Use MP3, WAV, M4A, WEBM, OGG, or FLAC.', 'error');
+                return;
+            }
+
+            // Check file size (25MB limit)
+            if (file.size > 25 * 1024 * 1024) {
+                showToast('Audio file too large. Maximum size is 25MB.', 'error');
+                return;
+            }
+
+            responseDiv.style.display = 'block';
+            responseDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Transcribing audio... This may take a moment.</div>';
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('patient_id', patientId);
+            formData.append('memory_type', memoryType);
+            formData.append('source', 'recording');
+
+            try {
+                const res = await fetch(`${API_BASE}/memory/audio`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({ detail: res.statusText }));
+                    throw new Error(err.detail || `Server Error ${res.status}`);
+                }
+
+                const data = await res.json();
+                const duration = data.duration_seconds ? `${Math.round(data.duration_seconds)}s` : 'N/A';
+                responseDiv.innerHTML = `
+                    <div class="response-header">
+                        <div class="response-meta">
+                            <span class="meta-badge success">✓ Audio Transcribed</span>
+                            <span class="meta-badge">🎤 ${data.modality}</span>
+                            <span class="meta-badge">⏱️ ${duration}</span>
+                            <span class="meta-badge">📊 ${data.chunks_stored} chunks</span>
+                        </div>
+                    </div>
+                    <div class="answer-text">
+                        <strong>Transcription Preview:</strong><br>
+                        <em style="color: var(--text-secondary);">"${data.transcript_preview}"</em>
+                    </div>
+                `;
+                showToast('Audio transcribed and stored successfully!', 'success');
+                fileInput.value = '';
+            } catch (e) {
+                responseDiv.innerHTML = `<div class="empty-state" style="color: var(--danger);">Error: ${e.message}</div>`;
+                showToast('Audio transcription failed', 'error');
             }
         }
 

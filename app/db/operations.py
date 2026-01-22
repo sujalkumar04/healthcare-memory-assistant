@@ -33,6 +33,7 @@ class QdrantOperations:
         memory_type: str = "note",
         source: str = "session",
         confidence: float = 1.0,
+        modality: str = "text",
         metadata: dict[str, Any] | None = None,
         point_id: str | None = None,
     ) -> str:
@@ -44,8 +45,9 @@ class QdrantOperations:
             patient_id: REQUIRED - Patient identifier for isolation
             content: Memory content text
             memory_type: clinical | mental_health | medication | note
-            source: session | doctor | import
+            source: session | doctor | import | pdf
             confidence: Confidence score (0.0 - 1.0)
+            modality: Data modality (text | document | image)
             metadata: Additional JSON metadata
             point_id: Optional - existing point ID for updates
 
@@ -60,6 +62,7 @@ class QdrantOperations:
             "memory_type": memory_type,
             "source": source,
             "confidence": confidence,
+            "modality": modality,
             "created_at": datetime.utcnow().isoformat(),
             "metadata": metadata or {},
         }

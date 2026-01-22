@@ -1,10 +1,12 @@
 """FastAPI Application Entrypoint."""
 
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import AsyncGenerator
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from qdrant_client.http import models
 
 from app.api.v1.router import api_router
@@ -57,6 +59,11 @@ def create_app() -> FastAPI:
 
     # Include API router
     app.include_router(api_router, prefix="/api/v1")
+
+    # Mount frontend static files
+    frontend_path = Path(__file__).parent.parent / "frontend"
+    if frontend_path.exists():
+        app.mount("/frontend", StaticFiles(directory=str(frontend_path), html=True), name="frontend")
 
     return app
 

@@ -67,10 +67,25 @@ class ReasoningChain:
     """
     Evidence-grounded reasoning pipeline.
     
-    HALLUCINATION CONTROL:
-    - If evidence list is empty → return fixed safe response (NO LLM call)
-    - If evidence exists → construct prompt with explicit rules
-    - LLM instructed to say "Insufficient data" if evidence is weak
+    ==========================================================================
+    ANTI-HALLUCINATION CONTROL (CRITICAL - APPLIES TO ALL MODALITIES)
+    ==========================================================================
+    
+    This safeguard ensures NO LLM generation without evidence:
+    
+    1. If evidence list is empty → return FIXED safe response (NO LLM call)
+    2. This applies to ALL modalities: text, document, AND image
+    3. If evidence exists → construct prompt with explicit grounding rules
+    4. LLM instructed to say "Insufficient data" if evidence is weak
+    
+    The LLM is NEVER called without first passing through the evidence check.
+    This is the primary defense against hallucinated medical information.
+    
+    For multimodal evidence:
+    - Text/Document: Full content passed to LLM
+    - Image: Reference only passed - LLM CANNOT interpret images
+    
+    ==========================================================================
     
     NOTE: This component does NOT perform retrieval.
     Evidence must be passed in from the retrieval layer.
@@ -97,7 +112,15 @@ class ReasoningChain:
         Returns:
             ReasoningResponse with answer and metadata
         """
-        # HALLUCINATION CONTROL: No evidence = no LLM call
+        # =====================================================================
+        # ANTI-HALLUCINATION GATE (CRITICAL)
+        # =====================================================================
+        # This check MUST remain at the top of this method.
+        # NO LLM call is made if evidence is empty.
+        # This applies to ALL modalities: text, document, image.
+        # If retrieval returns nothing across ANY modality, we return
+        # a fixed safe response WITHOUT invoking the LLM.
+        # =====================================================================
         if not evidence:
             response = ReasoningResponse(
                 answer_text="Insufficient data in patient records to answer this question. No relevant memories were found.",
@@ -109,6 +132,9 @@ class ReasoningChain:
                 patient_id=patient_id,
             )
             return response
+        # =====================================================================
+        # END ANTI-HALLUCINATION GATE - Evidence exists, proceeding to LLM
+        # =====================================================================
 
         # Build prompt based on mode
         if mode == "mental_health":

@@ -1,6 +1,6 @@
 """Schemas module initialization."""
 
-from app.schemas.memory import MemoryCreate, MemoryList, MemoryResponse, MemorySource, MemoryType
+from app.schemas.memory import MemoryCreate, MemoryList, MemoryResponse, MemorySource, MemoryType, Modality
 from app.schemas.patient import PatientCreate, PatientList, PatientResponse
 from app.schemas.search import (
     SearchRequest,
@@ -15,6 +15,7 @@ __all__ = [
     "MemoryList",
     "MemoryType",
     "MemorySource",
+    "Modality",
     "SearchRequest",
     "SearchResponse",
     "SearchWithContextRequest",

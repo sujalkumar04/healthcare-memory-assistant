@@ -8,6 +8,14 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 
+class Modality(str, Enum):
+    """Data modality of the memory."""
+
+    TEXT = "text"
+    DOCUMENT = "document"
+    IMAGE = "image"
+
+
 class MemoryType(str, Enum):
     """Types of healthcare memories."""
 
@@ -36,6 +44,7 @@ class MemoryCreate(BaseModel):
     content: str = Field(..., min_length=1, description="Memory content text")
     memory_type: MemoryType = Field(default=MemoryType.GENERAL, description="Type of memory")
     source: MemorySource = Field(default=MemorySource.CONVERSATION, description="Memory source")
+    modality: Modality = Field(default=Modality.TEXT, description="Data modality (text, document, image)")
     metadata: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
 
@@ -47,6 +56,7 @@ class MemoryResponse(BaseModel):
     content: str
     memory_type: MemoryType
     source: MemorySource
+    modality: Modality = Modality.TEXT
     created_at: datetime
     metadata: dict[str, Any]
     score: float | None = None  # Relevance score for search results

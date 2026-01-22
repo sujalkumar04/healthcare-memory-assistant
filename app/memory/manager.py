@@ -139,6 +139,7 @@ class MemoryManager:
         raw_text: str,
         memory_type: str = "note",
         source: str = "session",
+        modality: str = "text",
         metadata: dict[str, Any] | None = None,
         check_reinforcement: bool = True,
     ) -> dict[str, Any]:
@@ -155,7 +156,8 @@ class MemoryManager:
             patient_id: REQUIRED - Patient identifier (isolation key)
             raw_text: Raw memory text to ingest
             memory_type: clinical | mental_health | medication | note
-            source: session | doctor | import
+            source: session | doctor | import | pdf
+            modality: Data modality (text | document | image)
             metadata: Additional JSON metadata
             check_reinforcement: Whether to check for similar memories
 
@@ -225,6 +227,7 @@ class MemoryManager:
                 memory_type=memory_type,
                 source=source,
                 confidence=INITIAL_CONFIDENCE,
+                modality=modality,
                 metadata=chunk_metadata,
                 point_id=point_id,
             )
@@ -526,6 +529,91 @@ class MemoryManager:
             raise ValueError("Cross-patient deletion forbidden")
         
         return await qdrant_ops.delete_memory(point_id)
+
+    # =========================================================================
+    # AUDIO INGESTION
+    # =========================================================================
+
+    async def ingest_audio(
+        self,
+        patient_id: str,
+        audio_bytes: bytes,
+        filename: str,
+        memory_type: str = "session",
+        source: str = "recording",
+        metadata: dict[str, Any] | None = None,
+        check_reinforcement: bool = True,
+    ) -> dict[str, Any]:
+        """
+        Ingest audio memory via transcription.
+
+        Pipeline:
+        1. Validate audio file
+        2. Transcribe using Groq Whisper API
+        3. Process transcribed text through standard ingestion
+        4. Store with modality: "audio"
+
+        Args:
+            patient_id: REQUIRED - Patient identifier
+            audio_bytes: Raw audio file bytes
+            filename: Original filename (for format detection)
+            memory_type: clinical | mental_health | medication | session
+            source: recording | voicemail | session
+            metadata: Additional JSON metadata
+            check_reinforcement: Whether to check for similar memories
+
+        Returns:
+            {
+                "action": "created" | "reinforced",
+                "point_ids": [...],
+                "transcript": str,
+                "duration_seconds": float | None,
+            }
+        """
+        from app.multimodal.audio import audio_processor
+
+        if not patient_id:
+            raise ValueError("patient_id is required")
+        if not audio_bytes:
+            raise ValueError("audio_bytes cannot be empty")
+
+        # Step 1 & 2: Transcribe audio
+        result = await audio_processor.transcribe_audio_bytes(
+            audio_bytes=audio_bytes,
+            filename=filename,
+        )
+
+        if not result.success:
+            raise ValueError(f"Audio transcription failed: {result.error}")
+
+        if not result.transcript or not result.transcript.strip():
+            raise ValueError("Transcription returned empty text")
+
+        # Step 3: Build audio-specific metadata
+        audio_metadata = {
+            **(metadata or {}),
+            "original_filename": filename,
+            "duration_seconds": result.duration_seconds,
+            "transcription_model": "whisper-large-v3-turbo",
+            "detected_language": result.language,
+        }
+
+        # Step 4: Process through standard ingestion with modality="audio"
+        ingestion_result = await self.ingest_memory(
+            patient_id=patient_id,
+            raw_text=result.transcript,
+            memory_type=memory_type,
+            source=source,
+            modality="audio",
+            metadata=audio_metadata,
+            check_reinforcement=check_reinforcement,
+        )
+
+        # Add transcript preview to result
+        ingestion_result["transcript"] = result.transcript[:500] + ("..." if len(result.transcript) > 500 else "")
+        ingestion_result["duration_seconds"] = result.duration_seconds
+
+        return ingestion_result
 
 
 # Singleton instance

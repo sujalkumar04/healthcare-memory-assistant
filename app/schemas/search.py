@@ -4,7 +4,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
-from app.schemas.memory import MemoryResponse, MemoryType
+from app.schemas.memory import MemoryResponse, MemoryType, Modality
 
 
 class SearchRequest(BaseModel):
@@ -14,6 +14,9 @@ class SearchRequest(BaseModel):
     query: str = Field(..., min_length=1, description="Search query text")
     memory_types: list[MemoryType] | None = Field(
         default=None, description="Filter by memory types"
+    )
+    modalities: list[Modality] | None = Field(
+        default=None, description="Filter by modalities (text, document, image)"
     )
     limit: int = Field(default=10, ge=1, le=100, description="Max results to return")
     min_score: float = Field(default=0.5, ge=0.0, le=1.0, description="Minimum similarity score")

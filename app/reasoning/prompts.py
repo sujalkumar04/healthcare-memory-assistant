@@ -17,6 +17,13 @@ CRITICAL RULES:
 4. If evidence is insufficient, explicitly state "Insufficient data"
 5. Always recommend consulting a healthcare professional for medical decisions
 
+MULTIMODAL EVIDENCE RULES:
+- Text/Document evidence: Use the content directly for summarization
+- Image evidence: Acknowledge image exists, describe what record says about it
+- Do NOT interpret, analyze, or diagnose based on images
+- Do NOT make conclusions about image content beyond what is stated
+- Images are contextual references ONLY, not diagnostic evidence
+
 You help organize and summarize information — you do NOT provide medical advice."""
 
 
@@ -29,6 +36,12 @@ CRITICAL RULES:
 4. Do NOT diagnose mental health conditions
 5. If asked about treatment, recommend consulting a licensed professional
 6. If evidence is insufficient, say "I don't have enough information about this"
+
+MULTIMODAL EVIDENCE RULES:
+- Text/Document evidence: Use content for summarization
+- Image evidence: Note that images are referenced, but do NOT interpret them
+- You cannot analyze or diagnose based on images
+- Images are context only, not diagnostic evidence
 
 Your role is to help summarize and organize session information, not to provide therapy."""
 
@@ -127,6 +140,10 @@ def format_evidence_for_prompt(evidence_list: list[dict]) -> str:
     """
     Format evidence list into prompt-friendly string.
     
+    Handles multimodal evidence:
+    - text/document: Full content included
+    - image: Reference only (no interpretation)
+    
     Args:
         evidence_list: List of RetrievalEvidence.to_dict() results
         
@@ -143,12 +160,20 @@ def format_evidence_for_prompt(evidence_list: list[dict]) -> str:
         content = evidence.get("content", "")
         memory_type = evidence.get("memory_type", "note").upper()
         source = evidence.get("source", "unknown")
+        modality = evidence.get("modality", "text").upper()
         created_at = evidence.get("created_at", "")[:10]  # Date only
         confidence = evidence.get("confidence", 1.0)
         
+        # Build modality tag
+        modality_tag = f" [{modality}]" if modality != "TEXT" else ""
+        
+        # For images: Add explicit warning
+        if modality == "IMAGE":
+            content = f"{content}\n    [NOTE: Image reference only - do NOT interpret or diagnose from this image]"
+        
         # Format as numbered evidence block
         block = (
-            f"[{i}] Type: {memory_type} | Source: {source} | Date: {created_at} | Confidence: {confidence:.0%}\n"
+            f"[{i}] Type: {memory_type}{modality_tag} | Source: {source} | Date: {created_at} | Confidence: {confidence:.0%}\n"
             f"    {content}"
         )
         formatted_parts.append(block)
